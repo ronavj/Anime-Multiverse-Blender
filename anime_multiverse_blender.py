@@ -3,6 +3,7 @@ import random
 import time
 from datetime import datetime
 
+# --- App State Management ---
 if 'history' not in st.session_state:
     st.session_state.history = []
 if 'favorites' not in st.session_state:
@@ -12,6 +13,7 @@ if 'custom_anime' not in st.session_state:
 if 'current_plot' not in st.session_state:
     st.session_state.current_plot = ""
 
+# --- Expanded Anime Database ---
 default_anime = {
     "Naruto": {
         "plot": "A young ninja seeks recognition and dreams of becoming the Hokage, the village leader.",
@@ -63,10 +65,12 @@ default_anime = {
     }
 }
 
+# Initialize anime database with default entries and any custom ones
 if 'anime_database' not in st.session_state:
     st.session_state.anime_database = default_anime.copy()
     st.session_state.anime_database.update(st.session_state.custom_anime)
 
+# --- Crossover Types ---
 crossover_types = {
     "World Collision": "The physical worlds of both anime merge, forcing characters to adapt to new environments and threats.",
     "Character Swap": "Main characters from each series swap places, bringing their unique abilities and perspectives to a new world.",
@@ -76,6 +80,7 @@ crossover_types = {
     "Time Travel": "A time distortion connects both worlds across different time periods, creating paradoxes that must be resolved."
 }
 
+# --- Helper Functions ---
 def get_all_anime_options():
     """Return list of all available anime names"""
     return list(st.session_state.anime_database.keys())
@@ -100,7 +105,7 @@ def add_custom_anime(name, plot, characters, genres, year):
             "year": year
         }
         
-
+        # Update main database
         st.session_state.anime_database = default_anime.copy()
         st.session_state.anime_database.update(st.session_state.custom_anime)
         return True
@@ -111,7 +116,7 @@ def generate_episode_titles(anime1, anime2, count=3):
     anime1_data = st.session_state.anime_database[anime1]
     anime2_data = st.session_state.anime_database[anime2]
     
-
+    # Get combined elements to work with
     all_characters = anime1_data["characters"] + anime2_data["characters"]
     all_genres = list(set(anime1_data["genre"] + anime2_data["genre"]))
     
@@ -133,21 +138,21 @@ def generate_crossover_plot(anime1, anime2, crossover_type, tone):
     anime1_data = st.session_state.anime_database[anime1]
     anime2_data = st.session_state.anime_database[anime2]
     
-
+    # Get random characters from each anime
     char1 = random.choice(anime1_data["characters"])
     char2 = random.choice(anime2_data["characters"])
     
-
+    # Base introduction
     intro = (
         f"## {anime1} × {anime2}: {random.choice(['Worlds Collide', 'New Dimensions', 'Fated Encounter', 'Ultimate Crossover'])}\n\n"
         f"*Anime 1:* {anime1} ({anime1_data['year']}) - {', '.join(anime1_data['genre'])}\n"
         f"*Anime 2:* {anime2} ({anime2_data['year']}) - {', '.join(anime2_data['genre'])}\n\n"
     )
     
-
+    # Crossover type description
     type_desc = f"*Crossover Type:* {crossover_type}\n{crossover_types[crossover_type]}\n\n"
     
-
+    # Tone modifiers
     tone_modifiers = {
         "Action-Packed": {
             "adjectives": ["epic", "intense", "explosive", "adrenaline-fueled", "high-octane"],
@@ -167,11 +172,11 @@ def generate_crossover_plot(anime1, anime2, crossover_type, tone):
         }
     }
     
-
+    # Select random modifiers based on tone
     adj = random.choice(tone_modifiers[tone]["adjectives"])
     theme = random.choice(tone_modifiers[tone]["themes"])
     
-
+    # Main plot based on crossover type and tone
     if crossover_type == "World Collision":
         main_plot = (
             f"In this {adj} tale of {theme}, the worlds of {anime1} and {anime2} suddenly merge due to "
@@ -200,7 +205,7 @@ def generate_crossover_plot(anime1, anime2, crossover_type, tone):
         )
     
     elif crossover_type == "Villain Team-up":
-
+        # Get villains or use main characters as stand-ins
         villain1 = random.choice(anime1_data["characters"])
         villain2 = random.choice(anime2_data["characters"])
         
@@ -233,11 +238,11 @@ def generate_crossover_plot(anime1, anime2, crossover_type, tone):
             f"{random.choice(['restore the proper timeline', 'prevent a disaster that threatens both worlds', 'stop an entity feeding on temporal anomalies', 'create a new future for both realities'])}."
         )
     
-
+    # Episode titles
     episodes = generate_episode_titles(anime1, anime2)
     episodes_section = "## Potential Episode Titles\n" + "\n".join([f"- {i+1}. {title}" for i, title in enumerate(episodes)])
     
-
+    # Character dynamics
     dynamics = (
         f"## Key Character Dynamics\n"
         f"- *{char1} & {char2}:* {random.choice(['Reluctant allies who gradually develop mutual respect', 'Instant rivals with contrasting philosophies', 'Kindred spirits who recognize similarities in their journeys', 'Master and student relationship as one helps the other grow'])}\n"
@@ -245,13 +250,13 @@ def generate_crossover_plot(anime1, anime2, crossover_type, tone):
         f"- *Growth & Development:* {random.choice(['Both characters confront their personal weaknesses through this encounter', 'Their beliefs and values are challenged by exposure to a different world', 'They discover new applications for their abilities', 'Meeting counterparts from another world forces them to reconsider their paths'])}"
     )
     
-
+    # Timestamp for uniqueness
     timestamp = f"\n\n*Generated on {datetime.now().strftime('%Y-%m-%d at %H:%M:%S')}*"
     
-
+    # Combine all sections
     full_plot = intro + type_desc + main_plot + "\n\n" + episodes_section + "\n\n" + dynamics + timestamp
     
-
+    # Save to history
     st.session_state.history.append({
         "plot": full_plot,
         "anime1": anime1,
@@ -261,15 +266,15 @@ def generate_crossover_plot(anime1, anime2, crossover_type, tone):
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     })
     
-
+    # Update current plot
     st.session_state.current_plot = full_plot
     
     return full_plot
 
-
+# --- Streamlit UI ---
 st.set_page_config(page_title="Anime Crossover Generator", page_icon="🎭", layout="wide")
 
-
+# Custom CSS for better styling
 st.markdown("""
 <style>
     .main-header {
@@ -301,19 +306,21 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-
-st.markdown("<h1 class='main-header'>🎭 Ultimate Anime Crossover Generator</h1>", unsafe_allow_html=True)
+# Header
+st.markdown("<h1 class='main-header'>🎭 Anime Multiverse Blender</h1>", unsafe_allow_html=True)
 st.markdown("<h3 class='sub-header'>Create epic crossovers between your favorite anime worlds!</h3>", unsafe_allow_html=True)
+st.markdown("<h3 class='sub-header'>Final Project for course 82-279 @Carnegie Mellon</h3>", unsafe_allow_html=True)
 
-
+# Sidebar for additional features
 with st.sidebar:
     st.header("🛠 Options & Tools")
     
-
+    # Navigation tabs
     tab_selection = st.radio("Navigate:", ["Create Crossover", "Add Custom Anime", "View History", "Favorites"])
     
     st.markdown("---")
     
+    # App info
     st.markdown("### 📊 Database Stats")
     st.markdown(f"*Total Anime Series:* {len(st.session_state.anime_database)}")
     st.markdown(f"*Custom Anime Added:* {len(st.session_state.custom_anime)}")
@@ -322,7 +329,7 @@ with st.sidebar:
     
     st.markdown("---")
     
-    
+    # Clear data options
     if st.button("Clear All History"):
         st.session_state.history = []
         st.success("History cleared!")
@@ -336,18 +343,18 @@ with st.sidebar:
         st.session_state.anime_database = default_anime.copy()
         st.success("Custom anime reset!")
 
-
+# Main content based on sidebar selection
 if tab_selection == "Create Crossover":
     
     st.header("💥 Create Your Crossover")
     
-
+    # Create columns for selection
     col1, col2 = st.columns(2)
     
     with col1:
         anime1 = st.selectbox("First Anime Series", get_all_anime_options(), index=0)
         
-
+        # Display info about selected anime
         if anime1:
             anime1_data = st.session_state.anime_database[anime1]
             st.markdown(f"*Plot:* {anime1_data['plot']}")
@@ -357,10 +364,11 @@ if tab_selection == "Create Crossover":
             st.markdown(", ".join(anime1_data['characters']))
     
     with col2:
+        # Filter out the first selection
         remaining_options = [a for a in get_all_anime_options() if a != anime1]
         anime2 = st.selectbox("Second Anime Series", remaining_options, index=0)
         
-
+        # Display info about selected anime
         if anime2:
             anime2_data = st.session_state.anime_database[anime2]
             st.markdown(f"*Plot:* {anime2_data['plot']}")
@@ -369,7 +377,7 @@ if tab_selection == "Create Crossover":
             st.markdown("*Main Characters:*")
             st.markdown(", ".join(anime2_data['characters']))
     
-
+    # Additional options
     st.markdown("### 🔄 Crossover Options")
     crossover_type = st.selectbox("Crossover Type", list(crossover_types.keys()))
     
@@ -377,16 +385,17 @@ if tab_selection == "Create Crossover":
     
     tone = st.selectbox("Tone", ["Action-Packed", "Dramatic", "Comedic", "Mystery"])
     
-
+    # Generation
     if st.button("🚀 Generate Epic Crossover!"):
         with st.spinner("Creating your anime crossover... Please wait!"):
-
+            # Add a small delay for dramatic effect
             time.sleep(1)
             plot = generate_crossover_plot(anime1, anime2, crossover_type, tone)
         
+        # Display plot
         st.markdown(plot)
         
-  
+        # Action buttons
         col1, col2 = st.columns(2)
         
         with col1:
@@ -429,7 +438,7 @@ elif tab_selection == "Add Custom Anime":
         else:
             st.error("Please provide at least a title and plot summary.")
     
-  
+    # Display current custom anime
     if st.session_state.custom_anime:
         st.markdown("### Your Custom Anime")
         for name, data in st.session_state.custom_anime.items():
@@ -445,14 +454,14 @@ elif tab_selection == "View History":
     if not st.session_state.history:
         st.info("You haven't generated any crossovers yet. Create one to see it here!")
     else:
-  
+        # Sort by most recent first
         sorted_history = sorted(st.session_state.history, key=lambda x: x["timestamp"], reverse=True)
         
         for i, entry in enumerate(sorted_history):
             with st.expander(f"{entry['anime1']} × {entry['anime2']} ({entry['type']}) - {entry['timestamp']}"):
                 st.markdown(entry["plot"])
                 
-  
+                # Add option to save to favorites
                 if st.button(f"Add to Favorites", key=f"fav_hist_{i}"):
                     if entry["plot"] not in st.session_state.favorites:
                         st.session_state.favorites.append(entry["plot"])
@@ -470,13 +479,13 @@ elif tab_selection == "Favorites":
             with st.expander(f"Favorite #{i+1}"):
                 st.markdown(plot)
                 
-  
+                # Option to remove from favorites
                 if st.button("Remove from Favorites", key=f"rem_fav_{i}"):
                     st.session_state.favorites.pop(i)
                     st.success("Removed from favorites!")
                     st.rerun()
 
-
+# Footer
 st.markdown("""
 <div class="footer">
     Ultimate Anime Crossover Generator 🎭<br>
