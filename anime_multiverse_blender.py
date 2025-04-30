@@ -2,7 +2,6 @@ import streamlit as st
 import random
 from datetime import datetime
 
-# --- App State Management ---
 if 'history' not in st.session_state:
     st.session_state.history = []
 if 'favorites' not in st.session_state:
@@ -10,7 +9,6 @@ if 'favorites' not in st.session_state:
 if 'current_plot' not in st.session_state:
     st.session_state.current_plot = ""
 
-# --- Reduced Anime List ---
 anime_list = [
     "Astro Boy (1963)",
     "Tomorrow’s Joe (1970-1971)",
@@ -22,7 +20,6 @@ anime_list = [
     "Perfect Blue (1997)"
 ]
 
-# --- Updated Custom Crossover Stories ---
 crossover_database = {
 
     ('Astro Boy (1963)', 'Attack on Titan: Crimson Bow and Arrow (2014)'): """# Astro Boy x Attack on Titan
@@ -729,7 +726,6 @@ Bright digital ring arenas surrounded by floating scoreboards and glitching news
 
 
 
-# --- Helper Function ---
 def generate_crossover(anime1, anime2):
     key = (anime1, anime2)
     reverse_key = (anime2, anime1)
@@ -740,8 +736,6 @@ def generate_crossover(anime1, anime2):
     else:
         return f"### Crossover between {anime1} and {anime2}\n\n*Coming soon...* 🚀 (This crossover hasn't been written yet.)"
 
-# --- App Layout (unchanged) ---
-# st.title("✨ Anime Multiverse Blender ✨")
 st.markdown("<h1 style='text-align: center;'>✨ Anime Multiverse Blender ✨</h1>", unsafe_allow_html=True)
 
 st.markdown("""
@@ -775,20 +769,17 @@ else:
         st.session_state.current_plot = crossover_plot
         st.session_state.history.append((datetime.now(), crossover_plot))
 
-# --- Current Crossover Display ---
 if st.session_state.current_plot:
     st.subheader("🔮 Current Crossover")
     st.markdown(st.session_state.current_plot)
     st.button("Save to Favorites", on_click=lambda: st.session_state.favorites.append(st.session_state.current_plot))
     st.button("Clear Current", on_click=lambda: st.session_state.update({"current_plot": ""}))
 
-# --- Past Crossovers History ---
 if st.session_state.history:
     st.subheader("🕰️ Past Crossovers")
     for timestamp, crossover in reversed(st.session_state.history[-10:]):
         st.markdown(f"_{timestamp.strftime('%Y-%m-%d %H:%M:%S')}_  \n{crossover}")
 
-# --- Favorites ---
 if st.session_state.favorites:
     st.subheader("⭐ Favorites")
     for fav in reversed(st.session_state.favorites):
