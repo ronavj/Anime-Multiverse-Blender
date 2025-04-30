@@ -741,13 +741,24 @@ def generate_crossover(anime1, anime2):
         return f"### Crossover between {anime1} and {anime2}\n\n*Coming soon...* 🚀 (This crossover hasn't been written yet.)"
 
 # --- App Layout (unchanged) ---
-st.title("✨ Anime Multiverse Blender ✨")
+# st.title("✨ Anime Multiverse Blender ✨")
+st.markdown("<h1 style='text-align: center;'>✨ Anime Multiverse Blender ✨</h1>", unsafe_allow_html=True)
+
 st.markdown("""
 <div style='text-align: center;'>
     <b>Final Project for course 82279 at Carnegie Mellon University</b><br>
     <b>Made by Ronav Jaiswal</b>
 </div>
 """, unsafe_allow_html=True)
+st.write("")
+st.write("")
+
+from PIL import Image
+import streamlit as st
+
+
+image = Image.open("anime_multiverse_banner_landscape.png")
+st.image(image, use_container_width=True, caption="Anime Multiverse Blender")
 
 col1, col2 = st.columns(2)
 
